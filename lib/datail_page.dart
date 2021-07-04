@@ -74,8 +74,11 @@ class _DetailPageState extends State<DetailPage> {
                           child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(snapshot.data.login),
-                          Text(snapshot.data.url),
+                          Text(
+                            snapshot.data.login ?? "",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
                         ],
                       ))
                     ],
@@ -106,14 +109,14 @@ class _DetailPageState extends State<DetailPage> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      "Html Url :",
+                                      "Nom:",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
                                     SizedBox(width: 10),
                                     Expanded(
                                         child: Text(
-                                      snapshot.data.htmlUrl,
+                                      snapshot.data.name ?? "",
                                       style: TextStyle(color: Colors.grey[700]),
                                     ))
                                   ],
@@ -126,14 +129,14 @@ class _DetailPageState extends State<DetailPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Followers Url :",
+                                      "Email :",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
                                     SizedBox(width: 10),
                                     Expanded(
                                         child: Text(
-                                      snapshot.data.followersUrl,
+                                      snapshot.data.email ?? "",
                                       style: TextStyle(color: Colors.grey[700]),
                                     ))
                                   ],
@@ -146,14 +149,14 @@ class _DetailPageState extends State<DetailPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Following Url :",
+                                      "Followings:",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
                                     SizedBox(width: 10),
                                     Expanded(
                                         child: Text(
-                                      snapshot.data.followingUrl,
+                                      snapshot.data.following.toString() ?? "",
                                       style: TextStyle(color: Colors.grey[700]),
                                     ))
                                   ],
@@ -166,14 +169,14 @@ class _DetailPageState extends State<DetailPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Gists Url :",
+                                      "Followers:",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
                                     SizedBox(width: 10),
                                     Expanded(
                                         child: Text(
-                                      snapshot.data.gistsUrl,
+                                      snapshot.data.followers.toString() ?? "",
                                       style: TextStyle(color: Colors.grey[700]),
                                     ))
                                   ],
@@ -186,14 +189,55 @@ class _DetailPageState extends State<DetailPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Starred Url :",
+                                      "Public repository:",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
                                     SizedBox(width: 10),
                                     Expanded(
                                         child: Text(
-                                      snapshot.data.starredUrl,
+                                      snapshot.data.publicRepos.toString() ??
+                                          "",
+                                      style: TextStyle(color: Colors.grey[700]),
+                                    ))
+                                  ],
+                                ),
+                              ),
+                              Divider(),
+                              Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Html Url:",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                        child: Text(
+                                      snapshot.data.htmlUrl ?? "",
+                                      style: TextStyle(color: Colors.grey[700]),
+                                    ))
+                                  ],
+                                ),
+                              ),
+                              Divider(),
+                              Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Biographie:",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                        child: Text(
+                                      snapshot.data.bio ?? "",
                                       style: TextStyle(color: Colors.grey[700]),
                                     ))
                                   ],
