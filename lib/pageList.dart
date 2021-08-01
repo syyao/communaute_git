@@ -1,57 +1,49 @@
-import 'dart:convert';
-
 import 'package:communaute_git/datail_page.dart';
 import 'package:communaute_git/user.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'user_controller.dart';
 
 class PageList extends StatefulWidget {
-  final String username;
-
-  const PageList({Key key, this.username}) : super(key: key);
   @override
   _PageListState createState() => _PageListState();
 }
 
 class _PageListState extends State<PageList> {
-  Future<UserModel> fetchUser(String username) async {
-    final url = 'https://api.github.com/users/$username';
-    final response = await http.get(Uri.parse(url),
-        headers: {"authorization": "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"});
-    final responseData = jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      UserModel user;
-      user = UserModel.fromMap(responseData);
-      print(user.toMap());
-      return user;
-    } else {
-      throw Exception('Failed to load user');
-    }
+  Future<void> _showMyDialog(String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Erreur'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  Future<List> fetchfolowersFromUser() async {
-    final url = 'https://api.github.com/users/${widget.username}/followers';
-    final response = await http.get(Uri.parse(url),
-        headers: {"authorization": "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"});
-    final responseData = jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      List followers = [];
-      followers = responseData;
-      print(followers);
-      return followers;
-    } else {
-      throw Exception('Failed to load user');
-    }
-  }
-
-  Future<UserModel> futureUser;
-  Future<List> futureListFollowers;
+  UserController controller = Get.put(UserController());
   @override
   void initState() {
     super.initState();
-    futureUser = fetchUser(widget.username);
-    futureListFollowers = fetchfolowersFromUser();
+    controller.fetchfollowersFromUser();
   }
 
   @override
@@ -59,15 +51,15 @@ class _PageListState extends State<PageList> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("${widget.username} Followers"),
+        title: Text("${controller.userName} Followers"),
       ),
       body: Center(
-        child: FutureBuilder(
-          future: fetchfolowersFromUser(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            List snap = snapshot.data;
-            ConnectionState connection = snapshot.connectionState;
-            if (connection == ConnectionState.waiting) {
+        child: GetBuilder(
+          init: controller,
+          builder: (UserController c) {
+            List<UserModel> followers = c.followers;
+
+            if (followers == null) {
               return Center(
                 child: SpinKitFadingFour(
                   color: Theme.of(context).primaryColor,
@@ -75,22 +67,21 @@ class _PageListState extends State<PageList> {
                 ),
               );
             }
-            if (snapshot.hasError) {
-              return Center(child: Text(" error : ${snapshot.error}"));
+            if (followers.isEmpty) {
+              return Center(child: Text("Aucun follower"));
             }
 
             return ListView.separated(
                 separatorBuilder: (context, index) {
                   return SizedBox(height: 10);
                 },
-                itemCount: snap.length,
+                itemCount: followers.length,
                 itemBuilder: (context, index) {
+                  UserModel follower = followers[index];
                   return InkWell(
                     onTap: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return DetailPage(followers: snap[index]['login']);
-                      }));
+                      controller.follower = follower;
+                      Get.to(DetailPage());
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -98,11 +89,10 @@ class _PageListState extends State<PageList> {
                         child: ListTile(
                           leading: CircleAvatar(
                             radius: 25,
-                            backgroundImage: NetworkImage(
-                                "${snapshot.data[index]["avatar_url"]}"),
+                            backgroundImage: NetworkImage(follower.avatarUrl),
                           ),
-                          title: Text('${snapshot.data[index]["login"]}'),
-                          subtitle: Text('${snapshot.data[index]["html_url"]}'),
+                          title: Text(follower.login),
+                          subtitle: Text(follower.htmlUrl),
                         ),
                       ),
                     ),

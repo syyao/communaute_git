@@ -1,5 +1,7 @@
 import 'package:communaute_git/pageList.dart';
+import 'package:communaute_git/user_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class FeildPage extends StatefulWidget {
   @override
@@ -9,13 +11,13 @@ class FeildPage extends StatefulWidget {
 class _FeildPageState extends State<FeildPage> {
   TextEditingController userNameController = TextEditingController();
   final GlobalKey<FormState> _globalKey = GlobalKey();
+  UserController controller = Get.put(UserController());
   void search() {
     if (_globalKey.currentState.validate()) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return PageList(
-          username: userNameController.text,
-        );
-      }));
+      controller.userName = userNameController.text;
+      Get.to(
+        PageList(),
+      );
     }
   }
 
